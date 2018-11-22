@@ -1,0 +1,12 @@
+D:\VSProjects\Zmeika\bin\x64\Debug\Zmeika.exe.config
+D:\VSProjects\Zmeika\bin\x64\Debug\Zmeika.exe
+D:\VSProjects\Zmeika\bin\x64\Debug\Zmeika.pdb
+D:\VSProjects\Zmeika\bin\x64\Debug\sfmlnet-audio-2.dll
+D:\VSProjects\Zmeika\bin\x64\Debug\sfmlnet-graphics-2.dll
+D:\VSProjects\Zmeika\bin\x64\Debug\sfmlnet-system-2.dll
+D:\VSProjects\Zmeika\bin\x64\Debug\sfmlnet-window-2.dll
+D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.csproj.CoreCompileInputs.cache
+D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.csproj.CopyComplete
+D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.exe
+D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.pdb
+D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.csprojAssemblyReference.cache
