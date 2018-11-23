@@ -50,6 +50,36 @@ namespace Zmeika
 			foreach (var bodyPart in Body.Take(Body.Count - 1))
 				if (bodyPart.Position.Equals(headPosition))
 					Died();
+			ReachingBorders(headPosition);
+		}
+
+		private void ReachingBorders(Vector2f headPosition)
+		{
+			var delta = (int)Program.RANGE_BETWEEN_BLOCKS * 2;
+			var maxX = (int)(Program.renderWindow.Size.X / (Program.SizeOfRectangle.X + delta));
+			var maxY = (int)(Program.renderWindow.Size.Y / (Program.SizeOfRectangle.Y + delta));
+			var currentX = Program.GetIndexFromPosition(headPosition.X) - delta;
+			var currentY = Program.GetIndexFromPosition(headPosition.Y) - delta;
+			if (currentX == maxX)
+			{
+				Body.Dequeue();
+				Body.Enqueue(CreateBodyPart(0, currentY + delta));
+			}
+			if (currentX == -1 * delta)
+			{
+				Body.Dequeue();
+				Body.Enqueue(CreateBodyPart(maxX + delta, currentY + delta));
+			}
+			if (currentY == maxY)
+			{
+				Body.Dequeue();
+				Body.Enqueue(CreateBodyPart(currentX + delta, 0));
+			}
+			if (currentY == -1 * delta)
+			{
+				Body.Dequeue();
+				Body.Enqueue(CreateBodyPart(currentX + delta, maxY + delta));
+			}
 		}
 
 		public void Draw(RenderTarget target, RenderStates states)
