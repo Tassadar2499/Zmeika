@@ -16,18 +16,26 @@ namespace Zmeika
 		public static List<RectangleShape> foods;
 		public static Random randomizer;
 		public static RenderWindow renderWindow;
+		public static (int x, int y) mapSize;
+		public static Text text;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
 		public const float RANGE_BETWEEN_BLOCKS = 1;
 		static void Main(string[] args)
 		{
-			renderWindow = new RenderWindow(new VideoMode(1000, 800), "game");
+			renderWindow = new RenderWindow(new VideoMode(840, 840), "game");
 			renderWindow.SetFramerateLimit(120);
 			renderWindow.KeyPressed += KeyPressed;
 			randomizer = new Random();
 
-			snake = new Snake(5, 5);
-			snake.Died += SnakeIsDead;
+			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)),
+					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
+
+			snake = new Snake(5, 5, 10);
+			snake.EatJeppa += SnakeEatsJeppa;
+			snake.LengthChanged += ChangeText;
 			foods = new List<RectangleShape>();
+
+			text = new Text("Длина - " + snake.Body.Count, new Font("font.ttf"));
 
 			var timer = new Timer(Time.FromSeconds(0.1f));
 			timer.Tick += SnakeMove;
@@ -43,6 +51,7 @@ namespace Zmeika
 				renderWindow.Draw(snake);
 				foreach (var food in foods)
 					renderWindow.Draw(food);
+				renderWindow.Draw(text);
 				renderWindow.Display();
 			}
 		}
@@ -51,10 +60,18 @@ namespace Zmeika
 		{
 			snake.Move();
 		}
-		private static void SnakeIsDead()
+
+		private static void ChangeText(int length)
 		{
-			snake = new Snake(5, 5);
-			snake.Died += SnakeIsDead;
+			text.DisplayedString = "Длина - " + length;
+		}
+
+		private static void SnakeEatsJeppa(int index)
+		{
+			for (int i = 0; i <= index; i++)
+				snake.Body.Dequeue();
+
+			ChangeText(snake.Body.Count);
 		}
 		private static void KeyPressed(object sender, KeyEventArgs e)
 		{

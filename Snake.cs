@@ -23,63 +23,78 @@ namespace Zmeika
 		private Direction lastDirection = Direction.Right;
 		public Queue<RectangleShape> Body { get; set; }
 
-		public delegate void SnakeDeathEventHandler();
-		public event SnakeDeathEventHandler Died;
+		public delegate void SnakeEatsJeppaEventHandler(int index);
+		public delegate void SnakeChangeLengthHandler(int length);
+		public event SnakeEatsJeppaEventHandler EatJeppa;
+		public event SnakeChangeLengthHandler LengthChanged;
 
-		public Snake(int mapX, int mapY)
+		public Snake(int mapX, int mapY, int length)
 		{
 			Body = new Queue<RectangleShape>();
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < length; i++)
 				Body.Enqueue(CreateBodyPart(mapX + i, mapY));
 		}
 
 		public void Move()
 		{
 			var bodyPosition = Body.Last().Position;
-			var indexX = Program.GetIndexFromPosition(bodyPosition.X);
-			var indexY = Program.GetIndexFromPosition(bodyPosition.Y);
-			var indexes = GetNextIndexes(currentDirection, indexX, indexY);
+			var currentIndexX = Program.GetIndexFromPosition(bodyPosition.X);
+			var currentIndexY = Program.GetIndexFromPosition(bodyPosition.Y);
+			var newIndexes = GetNextIndexes(currentDirection, currentIndexX, currentIndexY);
 			lastDirection = currentDirection;
-			var food = Program.GetFoodFromPosition(Program.GetPositionFromIndexes(indexes.X, indexes.Y));
+
+			Body.Enqueue(CreateBodyPart(newIndexes.X, newIndexes.Y));
+
+			var food = Program.GetFoodFromPosition(Program.GetPositionFromIndexes(newIndexes.X, newIndexes.Y));
 			if (food == null)
 				Body.Dequeue();
 			else
+			{
 				Program.foods.Remove(food);
-			Body.Enqueue(CreateBodyPart(indexes.X, indexes.Y));
+				LengthChanged(Body.Count);
+			}
+
 			var headPosition = Body.Last().Position;
 			foreach (var bodyPart in Body.Take(Body.Count - 1))
+			{
 				if (bodyPart.Position.Equals(headPosition))
-					Died();
-			ReachingBorders(headPosition);
+				{
+					EatJeppa(GetObjectIndex(Body, bodyPart));
+					break;
+				}
+			}
+
+			Body.Last().Position = ReachingBorders(newIndexes.X, newIndexes.Y);
 		}
 
-		private void ReachingBorders(Vector2f headPosition)
+		public static int GetObjectIndex<T>(IEnumerable<T> array, T element)
 		{
-			var delta = (int)Program.RANGE_BETWEEN_BLOCKS * 2;
-			var maxX = (int)(Program.renderWindow.Size.X / (Program.SizeOfRectangle.X + delta));
-			var maxY = (int)(Program.renderWindow.Size.Y / (Program.SizeOfRectangle.Y + delta));
-			var currentX = Program.GetIndexFromPosition(headPosition.X) - delta;
-			var currentY = Program.GetIndexFromPosition(headPosition.Y) - delta;
-			if (currentX == maxX)
+			int index = 0;
+			foreach (var obj in array)
 			{
-				Body.Dequeue();
-				Body.Enqueue(CreateBodyPart(0, currentY + delta));
+				if (obj.Equals(element))
+					return index;
+				index++;
 			}
-			if (currentX == -1 * delta)
-			{
-				Body.Dequeue();
-				Body.Enqueue(CreateBodyPart(maxX + delta, currentY + delta));
-			}
-			if (currentY == maxY)
-			{
-				Body.Dequeue();
-				Body.Enqueue(CreateBodyPart(currentX + delta, 0));
-			}
-			if (currentY == -1 * delta)
-			{
-				Body.Dequeue();
-				Body.Enqueue(CreateBodyPart(currentX + delta, maxY + delta));
-			}
+
+			return -1;
+		}
+
+		private Vector2f ReachingBorders(int indexX, int indexY)
+		{
+			var currentX = SetInInterval(indexX, 0, Program.mapSize.x);
+			var currentY = SetInInterval(indexY, 0, Program.mapSize.y);
+
+			return Program.GetPositionFromIndexes(currentX, currentY);			
+		}
+
+		private int SetInInterval(int current, int min, int max)
+		{
+			if (current > max)
+				return min;
+			if (current < min)
+				return max;
+			return current;
 		}
 
 		public void Draw(RenderTarget target, RenderStates states)
