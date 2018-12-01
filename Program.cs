@@ -7,6 +7,8 @@ using SFML.Window;
 using SFML.System;
 using SFML.Graphics;
 using SFML.Audio;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Zmeika
 {
@@ -17,7 +19,8 @@ namespace Zmeika
 		public static Random randomizer;
 		public static RenderWindow renderWindow;
 		public static (int x, int y) mapSize;
-		public static Text text;
+		public static Text textLength;
+		public static Text textRecord;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
 		public const float RANGE_BETWEEN_BLOCKS = 1;
 		static void Main(string[] args)
@@ -31,11 +34,15 @@ namespace Zmeika
 					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
 
 			snake = new Snake(5, 5, 10);
+
 			snake.EatJeppa += SnakeEatsJeppa;
 			snake.LengthChanged += ChangeText;
 			foods = new List<RectangleShape>();
 
-			text = new Text("Длина - " + snake.Body.Count, new Font("font.ttf"));
+			textLength = new Text("Длина - " + snake.Body.Count, new Font("font.ttf"));
+			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(snake.Body.Count), new Font("font.ttf"));
+			textRecord.Position = new Vector2f(0, 30);
+			textRecord.Color = Color.Green;
 
 			var timer = new Timer(Time.FromSeconds(0.1f));
 			timer.Tick += SnakeMove;
@@ -51,7 +58,8 @@ namespace Zmeika
 				renderWindow.Draw(snake);
 				foreach (var food in foods)
 					renderWindow.Draw(food);
-				renderWindow.Draw(text);
+				renderWindow.Draw(textLength);
+				renderWindow.Draw(textRecord);
 				renderWindow.Display();
 			}
 		}
@@ -61,9 +69,25 @@ namespace Zmeika
 			snake.Move();
 		}
 
+		private static int ChangeCurrentRecord(int length)
+		{
+			var path = "Record.txt";
+			var str = JsonConvert.DeserializeObject(File.ReadAllText(path));
+			var lengthRecord = int.Parse(str.ToString());
+			if (length > lengthRecord)
+			{
+				str = JsonConvert.SerializeObject(length);
+				File.Delete(path);
+				File.AppendAllText(path, str.ToString());
+				lengthRecord = length;
+			}
+			return lengthRecord;
+		}
+
 		private static void ChangeText(int length)
 		{
-			text.DisplayedString = "Длина - " + length;
+			textLength.DisplayedString = "Длина - " + length;
+			textRecord.DisplayedString = "Рекорд - " + ChangeCurrentRecord(length);
 		}
 
 		private static void SnakeEatsJeppa(int index)
@@ -73,6 +97,7 @@ namespace Zmeika
 
 			ChangeText(snake.Body.Count);
 		}
+
 		private static void KeyPressed(object sender, KeyEventArgs e)
 		{
 			switch (e.Code)

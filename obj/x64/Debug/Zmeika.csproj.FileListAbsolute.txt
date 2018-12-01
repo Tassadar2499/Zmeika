@@ -10,3 +10,6 @@ D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.csproj.CopyComplete
 D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.exe
 D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.pdb
 D:\VSProjects\Zmeika\obj\x64\Debug\Zmeika.csprojAssemblyReference.cache
+D:\VSProjects\Zmeika\bin\x64\Debug\Newtonsoft.Json.dll
+D:\VSProjects\Zmeika\bin\x64\Debug\Newtonsoft.Json.pdb
+D:\VSProjects\Zmeika\bin\x64\Debug\Newtonsoft.Json.xml
