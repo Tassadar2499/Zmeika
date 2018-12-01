@@ -23,10 +23,8 @@ namespace Zmeika
 		private Direction lastDirection = Direction.Right;
 		public Queue<RectangleShape> Body { get; set; }
 
-		public delegate void SnakeEatsJeppaEventHandler(int index);
-		public delegate void SnakeChangeLengthHandler(int length);
-		public event SnakeEatsJeppaEventHandler EatJeppa;
-		public event SnakeChangeLengthHandler LengthChanged;
+		public event Action<int> EatJeppa;
+		public event Action<int> LengthChanged;
 
 		public Snake(int mapX, int mapY, int length)
 		{
