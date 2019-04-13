@@ -21,6 +21,8 @@ namespace Zmeika
 		public static (int x, int y) mapSize;
 		public static Text textLength;
 		public static Text textRecord;
+		public static Timer timer;
+		public static Clock clock;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
 		public const float RANGE_BETWEEN_BLOCKS = 1;
 		static void Main(string[] args)
@@ -39,16 +41,22 @@ namespace Zmeika
 			snake.LengthChanged += ChangeText;
 			foods = new List<RectangleShape>();
 
-			textLength = new Text("Длина - " + snake.Body.Count, new Font("font.ttf"));
-			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(snake.Body.Count), new Font("font.ttf"));
+			var currentFont = new Font("font.ttf");
+			textLength = new Text("Длина - " + snake.Body.Count, currentFont);
+			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(snake.Body.Count), currentFont);
 			textRecord.Position = new Vector2f(0, 30);
 			textRecord.Color = Color.Green;
 
-			var timer = new Timer(Time.FromSeconds(0.1f));
+			timer = new Timer(Time.FromSeconds(0.1f));
 			timer.Tick += SnakeMove;
 			timer.Tick += CreateFood;
-			var clock = new Clock();
+			clock = new Clock();
 
+			Parallel.Invoke(PlayGame);
+		}
+
+		private static void PlayGame()
+		{
 			while (renderWindow.IsOpen)
 			{
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
@@ -95,6 +103,7 @@ namespace Zmeika
 			for (int i = 0; i <= index; i++)
 				snake.Body.Dequeue();
 
+			MusicPlayer.PlaySoundDeath();
 			ChangeText(snake.Body.Count);
 		}
 
