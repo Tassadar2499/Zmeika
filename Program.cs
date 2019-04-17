@@ -24,6 +24,7 @@ namespace Zmeika
 		public static Clock clock;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
 		public const float RANGE_BETWEEN_BLOCKS = 1;
+		public static bool IsPaused = false;
 
 		static void Main(string[] args)
 		{
@@ -36,8 +37,10 @@ namespace Zmeika
 			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)),
 					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
 
-			gameMap.Snakes.Add(CreateSnake(5, 5, 20, Color.Blue));
-			gameMap.Snakes.Add(CreateSnake(15, 5, 20, Color.White));
+			gameMap.Snakes.Add(CreateSnake(5, 5, 10, Color.Blue));
+			gameMap.Snakes.Add(CreateSnake(15, 5, 10, Color.White));
+
+			gameMap.EatJeppas += OnSnakeEatsJeppa;
 
 			var currentFont = new Font("font.ttf");
 			textLength = new Text("Длина - " + gameMap.Snakes.First().Body.Count, currentFont);
@@ -56,7 +59,10 @@ namespace Zmeika
 			{
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
 				renderWindow.DispatchEvents();
-				timer.Update(dt);
+
+				if (!IsPaused)
+					timer.Update(dt);
+
 				renderWindow.Clear();
 
 				foreach (var snake in gameMap.Snakes)
@@ -75,6 +81,8 @@ namespace Zmeika
 		{
 			foreach (var snake in gameMap.Snakes)
 				snake.Move();
+
+			gameMap.SnakesEatJeppas();
 		}
 
 		private static void GenerateFood()
@@ -96,7 +104,7 @@ namespace Zmeika
 		{
 			var snake = new Snake(indexX, indexY, lenght, color);
 
-			snake.EatJeppa += OnSnakeEatsJeppa;
+			//snake.EatJeppa += OnSnakeEatsJeppa;
 			snake.LengthChanged += ChangeText;
 
 			return snake;
@@ -123,14 +131,23 @@ namespace Zmeika
 			textRecord.DisplayedString = "Рекорд - " + ChangeCurrentRecord(length);
 		}
 
-		private static void OnSnakeEatsJeppa(int index)
+		private static void OnSnakeEatsJeppa(int snakeIndex)
 		{
-			//for (int i = 0; i <= index; i++)
-			//	snake.Body.Dequeue();
-
+			IsPaused = true;		
 			MusicPlayer.PlaySoundDeath();
-			//ChangeText(snake.Body.Count);
 		}
+
+		//private static void OnSnakeEatsJeppa(int index)
+		//{
+		//	//for (int i = 0; i <= index; i++)
+		//	//	snake.Body.Dequeue();
+		//
+		//	IsPaused = true;
+		//
+		//	MusicPlayer.PlaySoundDeath();
+		//	
+		//	//ChangeText(snake.Body.Count);
+		//}
 
 		private static void KeyPressed(object sender, KeyEventArgs e)
 		{
@@ -141,10 +158,10 @@ namespace Zmeika
 				case Keyboard.Key.A: gameMap.Snakes.First().ChangeDirection(Direction.Left); break;
 				case Keyboard.Key.D: gameMap.Snakes.First().ChangeDirection(Direction.Right); break;
 
-				case Keyboard.Key.Num8: gameMap.Snakes.Last().ChangeDirection(Direction.Up); break;
-				case Keyboard.Key.Num5: gameMap.Snakes.Last().ChangeDirection(Direction.Down); break;
-				case Keyboard.Key.Num4: gameMap.Snakes.Last().ChangeDirection(Direction.Left); break;
-				case Keyboard.Key.Num6: gameMap.Snakes.Last().ChangeDirection(Direction.Right); break;
+				case Keyboard.Key.Numpad8: gameMap.Snakes.Last().ChangeDirection(Direction.Up); break;
+				case Keyboard.Key.Numpad5: gameMap.Snakes.Last().ChangeDirection(Direction.Down); break;
+				case Keyboard.Key.Numpad4: gameMap.Snakes.Last().ChangeDirection(Direction.Left); break;
+				case Keyboard.Key.Numpad6: gameMap.Snakes.Last().ChangeDirection(Direction.Right); break;
 
 				case Keyboard.Key.Escape:
 					renderWindow.Close();

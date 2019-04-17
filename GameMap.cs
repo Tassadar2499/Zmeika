@@ -13,15 +13,33 @@ namespace Zmeika
 		public List<Snake> Snakes { get; set; }
 		public List<RectangleShape> Foods { get; set; }
 
+		public event Action<int> EatJeppas;
+
 		public GameMap()
 		{
 			Snakes = new List<Snake>();
 			Foods = new List<RectangleShape>();
 		}
 
+		public void SnakesEatJeppas()
+		{
+			for(var i = 0; i < Snakes.Count; i++)
+			{
+				for (var j = 0; j < Snakes.Count; j++)
+				{
+					if (Snake.CheckEatJeppa(Snakes[i], Snakes[j]))
+						EatJeppas(i);
+
+					if (i != j && Snake.CheckEatJeppa(Snakes[j], Snakes[i]))
+						EatJeppas(j);
+				}
+			}
+		}
+
 		public void CreateFood(int indexX, int indexY)
 		{
-			var food = new RectangleShape(Program.SizeOfRectangle) {
+			var food = new RectangleShape(Program.SizeOfRectangle)
+			{
 				Position = Utils.GetPositionFromIndexes(indexX, indexY),
 				FillColor = Color.Red
 			};

@@ -15,6 +15,7 @@ namespace Zmeika
 		private Direction currentDirection = Direction.Down;
 		private Direction lastDirection = Direction.Down;
 		public Queue<RectangleShape> Body { get; set; }
+		public RectangleShape Head => Body.Last();
 		public Color Color { get; private set; }
 
 		public event Action<int> EatJeppa;
@@ -47,17 +48,45 @@ namespace Zmeika
 				LengthChanged(Body.Count);
 			}
 
-			var headPosition = Body.Last().Position;
-			foreach (var bodyPart in Body.Take(Body.Count - 1))
-			{
-				if (bodyPart.Position.Equals(headPosition))
-				{
-					EatJeppa(Body.GetObjectIndex(bodyPart));
-					break;
-				}
-			}
+			CheckSelfEatJeppa();				
 
 			Body.Last().Position = ReachingBorders(X, Y);
+		}
+
+		private void CheckSelfEatJeppa()
+		{
+			if(EatJeppa != null)
+			{
+				var headPosition = Body.Last().Position;
+				foreach (var bodyPart in Body.Take(Body.Count - 1))
+				{
+					if (bodyPart.Position.Equals(headPosition))
+					{
+						EatJeppa(Body.GetObjectIndex(bodyPart));
+						return;
+					}
+				}
+			}
+		}
+
+		public static bool CheckEatJeppa(Snake first, Snake second)
+		{
+			var headPosition = first.Head.Position;
+
+			if (first.Equals(second))
+			{
+				foreach (var bodyPart in second.Body.Take(second.Body.Count - 1))
+					if (bodyPart.Position.Equals(headPosition))
+						return true;
+			}
+			else
+			{
+				foreach (var bodyPart in second.Body)
+					if (bodyPart.Position.Equals(headPosition))
+						return true;
+			}
+
+			return false;
 		}
 
 		private Vector2f ReachingBorders(int indexX, int indexY)
