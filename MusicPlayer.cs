@@ -11,7 +11,7 @@ namespace Zmeika
 	{
 		public static void PlaySoundDeath()
 		{
-			SoundPlayer sp = new SoundPlayer("pain.wav");
+			var sp = new SoundPlayer("pain.wav");
 			sp.Play();
 		}
 	}
