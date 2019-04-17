@@ -15,33 +15,35 @@ namespace Zmeika
 		private Direction currentDirection = Direction.Down;
 		private Direction lastDirection = Direction.Down;
 		public Queue<RectangleShape> Body { get; set; }
+		public Color Color { get; private set; }
 
 		public event Action<int> EatJeppa;
 		public event Action<int> LengthChanged;
 
-		public Snake(int mapX, int mapY, int length)
+		public Snake(int mapX, int mapY, int length, Color color)
 		{
+			Color = color;
 			Body = new Queue<RectangleShape>();
 			for (int i = 0; i < length; i++)
-				Body.Enqueue(CreateBodyPart(mapX, mapY));
+				Body.Enqueue(CreateBodyPart(mapX, mapY, Color));
 		}
 
 		public void Move()
 		{
 			var bodyPosition = Body.Last().Position;
-			var currentIndexX = Program.GetIndexFromPosition(bodyPosition.X);
-			var currentIndexY = Program.GetIndexFromPosition(bodyPosition.Y);
+			var currentIndexX = Utils.GetIndexFromPosition(bodyPosition.X);
+			var currentIndexY = Utils.GetIndexFromPosition(bodyPosition.Y);
 			var (X, Y) = GetNextIndexes(currentDirection, currentIndexX, currentIndexY);
 			lastDirection = currentDirection;
 
-			Body.Enqueue(CreateBodyPart(X, Y));
+			Body.Enqueue(CreateBodyPart(X, Y, Color));
 
-			var food = Program.GetFoodFromPosition(Utils.GetPositionFromIndexes(X, Y));
+			var food = Program.gameMap.GetFoodFromPosition(Utils.GetPositionFromIndexes(X, Y));
 			if (food == null)
 				Body.Dequeue();
 			else
 			{
-				Program.foods.Remove(food);
+				Program.gameMap.Foods.Remove(food);
 				LengthChanged(Body.Count);
 			}
 
@@ -78,11 +80,12 @@ namespace Zmeika
 				currentDirection = dir;
 		}
 
-		private static RectangleShape CreateBodyPart(int mapX, int mapY)
+		private static RectangleShape CreateBodyPart(int mapX, int mapY, Color color)
 		{
 			return new RectangleShape(Program.SizeOfRectangle)
 			{
-				Position = Utils.GetPositionFromIndexes(mapX, mapY)
+				Position = Utils.GetPositionFromIndexes(mapX, mapY),
+				FillColor = color
 			};
 		}
 

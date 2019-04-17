@@ -10,28 +10,31 @@ namespace Zmeika
 {
 	class GameMap
 	{
-		public static List<Snake> snakes;
-		public static List<RectangleShape> foods;
+		public List<Snake> Snakes { get; set; }
+		public List<RectangleShape> Foods { get; set; }
 
-		private void CreateFood()
+		public GameMap()
 		{
-			if (foods.Count < 5)
-			{
-				var indexX = Program.randomizer.Next(0, (int)(Program.renderWindow.Size.X / (Program.SizeOfRectangle.X + Program.RANGE_BETWEEN_BLOCKS * 2)));
-				var indexY = Program.randomizer.Next(0, (int)(Program.renderWindow.Size.Y / (Program.SizeOfRectangle.Y + Program.RANGE_BETWEEN_BLOCKS * 2)));
-				var food = new RectangleShape(Program.SizeOfRectangle);
-				food.Position = Utils.GetPositionFromIndexes(indexX, indexY);
-				food.FillColor = Color.Red;
-				if (IsFreePosition(food.Position))
-					foods.Add(food);
-			}
+			Snakes = new List<Snake>();
+			Foods = new List<RectangleShape>();
 		}
 
-		private bool IsFreePosition(Vector2f position)
+		public void CreateFood(int indexX, int indexY)
+		{
+			var food = new RectangleShape(Program.SizeOfRectangle) {
+				Position = Utils.GetPositionFromIndexes(indexX, indexY),
+				FillColor = Color.Red
+			};
+
+			if (IsFreePosition(food.Position))
+				Foods.Add(food);
+		}
+
+		public bool IsFreePosition(Vector2f position)
 		{
 			if (IsFoodPosition(position))
 				return false;
-			foreach (var snake in snakes)
+			foreach (var snake in Snakes)
 				foreach (var bodyPart in snake.Body)
 					if (position.Equals(bodyPart.Position))
 						return false;
@@ -40,7 +43,7 @@ namespace Zmeika
 
 		public bool IsFoodPosition(Vector2f position)
 		{
-			foreach (var food in foods)
+			foreach (var food in Foods)
 				if (position.Equals(food.Position))
 					return true;
 			return false;
@@ -48,7 +51,7 @@ namespace Zmeika
 
 		public RectangleShape GetFoodFromPosition(Vector2f position)
 		{
-			foreach (var food in foods)
+			foreach (var food in Foods)
 				if (position.Equals(food.Position))
 					return food;
 			return null;

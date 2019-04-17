@@ -25,7 +25,7 @@ namespace Zmeika
 
 		public static int GetIndexFromPosition(float position)
 		{
-			return (int)(position / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS));
+			return (int)(position / (Program.SizeOfRectangle.X + Program.RANGE_BETWEEN_BLOCKS));
 		}
 
 		public static bool IsOppositeDirection(this Direction dirA, Direction dirB)
