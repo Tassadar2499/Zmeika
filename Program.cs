@@ -14,8 +14,7 @@ namespace Zmeika
 {
 	class Program
 	{
-		public static Snake snake;
-		public static List<RectangleShape> foods;
+		
 		public static Random randomizer;
 		public static RenderWindow renderWindow;
 		public static (int x, int y) mapSize;
@@ -129,46 +128,6 @@ namespace Zmeika
 					renderWindow.Close();
 					break;
 			}
-		}
-
-		private static void CreateFood()
-		{
-			if (foods.Count < 5)
-			{
-				var indexX = randomizer.Next(0, (int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)));
-				var indexY = randomizer.Next(0, (int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
-				var food = new RectangleShape(SizeOfRectangle);
-				food.Position = Utils.GetPositionFromIndexes(indexX, indexY);
-				food.FillColor = Color.Red;
-				if (IsFreePosition(food.Position))
-					foods.Add(food);
-			}
-		}		
-
-		private static bool IsFreePosition(Vector2f position)
-		{
-			if (IsFoodPosition(position))
-				return false;
-			foreach (var bodyPart in snake.Body)
-				if (position.Equals(bodyPart.Position))
-					return false;
-			return true;
-		}
-
-		public static bool IsFoodPosition(Vector2f position)
-		{
-			foreach (var food in foods)
-				if (position.Equals(food.Position))
-					return true;
-			return false;
-		}
-
-		public static RectangleShape GetFoodFromPosition(Vector2f position)
-		{
-			foreach (var food in foods)
-				if (position.Equals(food.Position))
-					return food;
-			return null;
-		}
+		}	
 	}
 }
