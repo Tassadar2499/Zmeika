@@ -27,7 +27,7 @@ namespace Zmeika
 		public const float RANGE_BETWEEN_BLOCKS = 1;
 		static void Main(string[] args)
 		{
-			renderWindow = new RenderWindow(new VideoMode(840, 840), "game");
+			renderWindow = new RenderWindow(new VideoMode(600, 600), "game");
 			renderWindow.SetFramerateLimit(120);
 			renderWindow.KeyPressed += KeyPressed;
 			randomizer = new Random();
@@ -35,7 +35,7 @@ namespace Zmeika
 			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)),
 					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
 
-			snake = new Snake(5, 5, 10);
+			snake = new Snake(5, 5, 3);
 
 			snake.EatJeppa += SnakeEatsJeppa;
 			snake.LengthChanged += ChangeText;
@@ -43,9 +43,11 @@ namespace Zmeika
 
 			var currentFont = new Font("font.ttf");
 			textLength = new Text("Длина - " + snake.Body.Count, currentFont);
-			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(snake.Body.Count), currentFont);
-			textRecord.Position = new Vector2f(0, 30);
-			textRecord.Color = Color.Green;
+			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(snake.Body.Count), currentFont)
+			{
+				Position = new Vector2f(0, 30),
+				Color = Color.Green
+			};
 
 			timer = new Timer(Time.FromSeconds(0.1f));
 			timer.Tick += SnakeMove;

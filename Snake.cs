@@ -19,8 +19,8 @@ namespace Zmeika
 			Left,
 			Right
 		}
-		private Direction currentDirection = Direction.Right;
-		private Direction lastDirection = Direction.Right;
+		private Direction currentDirection = Direction.Down;
+		private Direction lastDirection = Direction.Down;
 		public Queue<RectangleShape> Body { get; set; }
 
 		public event Action<int> EatJeppa;
@@ -30,7 +30,7 @@ namespace Zmeika
 		{
 			Body = new Queue<RectangleShape>();
 			for (int i = 0; i < length; i++)
-				Body.Enqueue(CreateBodyPart(mapX + i, mapY));
+				Body.Enqueue(CreateBodyPart(mapX, mapY));
 		}
 
 		public void Move()
@@ -38,12 +38,12 @@ namespace Zmeika
 			var bodyPosition = Body.Last().Position;
 			var currentIndexX = Program.GetIndexFromPosition(bodyPosition.X);
 			var currentIndexY = Program.GetIndexFromPosition(bodyPosition.Y);
-			var newIndexes = GetNextIndexes(currentDirection, currentIndexX, currentIndexY);
+			var (X, Y) = GetNextIndexes(currentDirection, currentIndexX, currentIndexY);
 			lastDirection = currentDirection;
 
-			Body.Enqueue(CreateBodyPart(newIndexes.X, newIndexes.Y));
+			Body.Enqueue(CreateBodyPart(X, Y));
 
-			var food = Program.GetFoodFromPosition(Program.GetPositionFromIndexes(newIndexes.X, newIndexes.Y));
+			var food = Program.GetFoodFromPosition(Program.GetPositionFromIndexes(X, Y));
 			if (food == null)
 				Body.Dequeue();
 			else
@@ -62,7 +62,7 @@ namespace Zmeika
 				}
 			}
 
-			Body.Last().Position = ReachingBorders(newIndexes.X, newIndexes.Y);
+			Body.Last().Position = ReachingBorders(X, Y);
 		}
 
 		public static int GetObjectIndex<T>(IEnumerable<T> array, T element)
