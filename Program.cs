@@ -123,6 +123,9 @@ namespace Zmeika
 				case Keyboard.Key.D:
 					snake.ChangeDirection(Snake.Direction.Right);
 					break;
+				case Keyboard.Key.Escape:
+					renderWindow.Close();
+					break;
 			}
 		}
 
