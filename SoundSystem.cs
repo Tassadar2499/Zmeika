@@ -8,15 +8,15 @@ using SFML.Audio;
 
 namespace Zmeika
 {
-	public static class MusicPlayer
+	public static class SoundSystem
 	{
-		private static SoundBuffer _soundBuffer = new SoundBuffer("pain.wav");
+		private static SoundBuffer _soundBuffer = new SoundBuffer("dead.wav");
 
 		public static void PlaySoundDeath()
 		{
 			var sound = new Sound(_soundBuffer)
 			{
-				Volume = 0.2f
+				Volume = 100f
 			};
 
 			sound.Play();

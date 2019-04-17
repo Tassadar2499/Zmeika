@@ -45,7 +45,7 @@ namespace Zmeika
 			else
 			{
 				Program.gameMap.Foods.Remove(food);
-				LengthChanged(Body.Count);
+				LengthChanged?.Invoke(Body.Count);
 			}
 
 			CheckSelfEatJeppa();				
@@ -55,16 +55,13 @@ namespace Zmeika
 
 		private void CheckSelfEatJeppa()
 		{
-			if(EatJeppa != null)
+			var headPosition = Body.Last().Position;
+			foreach (var bodyPart in Body.Take(Body.Count - 1))
 			{
-				var headPosition = Body.Last().Position;
-				foreach (var bodyPart in Body.Take(Body.Count - 1))
+				if (bodyPart.Position.Equals(headPosition))
 				{
-					if (bodyPart.Position.Equals(headPosition))
-					{
-						EatJeppa(Body.GetObjectIndex(bodyPart));
-						return;
-					}
+					EatJeppa?.Invoke(Body.GetObjectIndex(bodyPart));
+					return;
 				}
 			}
 		}
@@ -91,8 +88,8 @@ namespace Zmeika
 
 		private Vector2f ReachingBorders(int indexX, int indexY)
 		{
-			var currentX = Utils.SetInInterval(indexX, 0, Program.mapSize.x);
-			var currentY = Utils.SetInInterval(indexY, 0, Program.mapSize.y);
+			var currentX = Utils.SetInInterval(indexX, 0, Program.mapSize.X);
+			var currentY = Utils.SetInInterval(indexY, 0, Program.mapSize.Y);
 
 			return Utils.GetPositionFromIndexes(currentX, currentY);
 		}

@@ -17,18 +17,19 @@ namespace Zmeika
 		public static GameMap gameMap = new GameMap();
 		public static Random randomizer;
 		public static RenderWindow renderWindow;
-		public static (int x, int y) mapSize;
-		public static Text textLength;
-		public static Text textRecord;
+		public static (int X, int Y) mapSize;
 		public static Timer timer;
 		public static Clock clock;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
 		public const float RANGE_BETWEEN_BLOCKS = 1;
-		public static bool IsPaused = false;
+		public static bool IsWorldPaused = false;
+
+		public static bool ShowDeadScreen = false;
+		public static Sprite DeadScreen;
 
 		static void Main(string[] args)
 		{
-			renderWindow = new RenderWindow(new VideoMode(600, 600), "game");
+			renderWindow = new RenderWindow(new VideoMode(800, 600), "game");
 			renderWindow.SetFramerateLimit(120);
 			renderWindow.KeyPressed += KeyPressed;
 			renderWindow.Closed += (obj, arg) => (obj as RenderWindow).Close();
@@ -37,20 +38,20 @@ namespace Zmeika
 			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)),
 					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
 
-			gameMap.Snakes.Add(CreateSnake(5, 5, 10, Color.Blue));
-			gameMap.Snakes.Add(CreateSnake(15, 5, 10, Color.White));
+			DeadScreen = new Sprite(new Texture("dead.png"));
+			DeadScreen.Scale = new Vector2f(
+					renderWindow.Size.X / (float)DeadScreen.TextureRect.Width,
+					renderWindow.Size.Y / (float)DeadScreen.TextureRect.Height);
+			DeadScreen.Color = new Color(0, 0, 0, 0);
 
+			gameMap.Snakes.Add(CreateSnake(5, 5, 10, Color.Blue));
+			gameMap.Snakes.Add(CreateSnake(mapSize.X - 5, 5, 10, Color.White));
 			gameMap.EatJeppas += OnSnakeEatsJeppa;
 
-			var currentFont = new Font("font.ttf");
-			textLength = new Text("Длина - " + gameMap.Snakes.First().Body.Count, currentFont);
-			textRecord = new Text("Рекорд - " + ChangeCurrentRecord(gameMap.Snakes.First().Body.Count), currentFont)
-			{
-				Position = new Vector2f(0, 30),
-				Color = Color.Green
-			};
+			var deadScreenTimer = new Timer(Time.FromSeconds(0.03f));
+			deadScreenTimer.Tick += () => DeadScreen.Color = new Color(255, 255, 255, (byte)Math.Min(DeadScreen.Color.A + 2, byte.MaxValue));
 
-			timer = new Timer(Time.FromSeconds(0.1f));
+			timer = new Timer(Time.FromSeconds(0.11f));
 			timer.Tick += SnakeMove;
 			timer.Tick += GenerateFood;
 			clock = new Clock();
@@ -60,7 +61,7 @@ namespace Zmeika
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
 				renderWindow.DispatchEvents();
 
-				if (!IsPaused)
+				if (!IsWorldPaused)
 					timer.Update(dt);
 
 				renderWindow.Clear();
@@ -71,8 +72,12 @@ namespace Zmeika
 				foreach (var food in gameMap.Foods)
 					renderWindow.Draw(food);
 
-				renderWindow.Draw(textLength);
-				renderWindow.Draw(textRecord);
+				if (ShowDeadScreen)
+				{
+					renderWindow.Draw(DeadScreen);
+					deadScreenTimer.Update(dt);
+				}
+
 				renderWindow.Display();
 			}
 		}
@@ -105,7 +110,6 @@ namespace Zmeika
 			var snake = new Snake(indexX, indexY, lenght, color);
 
 			//snake.EatJeppa += OnSnakeEatsJeppa;
-			snake.LengthChanged += ChangeText;
 
 			return snake;
 		}
@@ -125,29 +129,12 @@ namespace Zmeika
 			return lengthRecord;
 		}
 
-		private static void ChangeText(int length)
-		{
-			textLength.DisplayedString = "Длина - " + length;
-			textRecord.DisplayedString = "Рекорд - " + ChangeCurrentRecord(length);
-		}
-
 		private static void OnSnakeEatsJeppa(int snakeIndex)
 		{
-			IsPaused = true;		
-			MusicPlayer.PlaySoundDeath();
+			IsWorldPaused = true;
+			ShowDeadScreen = true;
+			SoundSystem.PlaySoundDeath();
 		}
-
-		//private static void OnSnakeEatsJeppa(int index)
-		//{
-		//	//for (int i = 0; i <= index; i++)
-		//	//	snake.Body.Dequeue();
-		//
-		//	IsPaused = true;
-		//
-		//	MusicPlayer.PlaySoundDeath();
-		//	
-		//	//ChangeText(snake.Body.Count);
-		//}
 
 		private static void KeyPressed(object sender, KeyEventArgs e)
 		{
