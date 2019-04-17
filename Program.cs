@@ -114,16 +114,16 @@ namespace Zmeika
 			switch (e.Code)
 			{
 				case Keyboard.Key.W:
-					snake.ChangeDirection(Snake.Direction.Up);
+					snake.ChangeDirection(Direction.Up);
 					break;
 				case Keyboard.Key.S:
-					snake.ChangeDirection(Snake.Direction.Down);
+					snake.ChangeDirection(Direction.Down);
 					break;
 				case Keyboard.Key.A:
-					snake.ChangeDirection(Snake.Direction.Left);
+					snake.ChangeDirection(Direction.Left);
 					break;
 				case Keyboard.Key.D:
-					snake.ChangeDirection(Snake.Direction.Right);
+					snake.ChangeDirection(Direction.Right);
 					break;
 				case Keyboard.Key.Escape:
 					renderWindow.Close();
@@ -138,23 +138,12 @@ namespace Zmeika
 				var indexX = randomizer.Next(0, (int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)));
 				var indexY = randomizer.Next(0, (int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
 				var food = new RectangleShape(SizeOfRectangle);
-				food.Position = GetPositionFromIndexes(indexX, indexY);
+				food.Position = Utils.GetPositionFromIndexes(indexX, indexY);
 				food.FillColor = Color.Red;
 				if (IsFreePosition(food.Position))
 					foods.Add(food);
 			}
-		}
-
-		public static Vector2f GetPositionFromIndexes(int indexX, int indexY)
-		{
-			return new Vector2f(indexX * (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS), indexY *
-				(SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS));
-		}
-
-		public static int GetIndexFromPosition(float position)
-		{
-			return (int)(position / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS));
-		}
+		}		
 
 		private static bool IsFreePosition(Vector2f position)
 		{

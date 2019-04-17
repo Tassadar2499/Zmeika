@@ -12,13 +12,6 @@ namespace Zmeika
 {
 	public class Snake : Drawable
 	{
-		public enum Direction
-		{
-			Up,
-			Down,
-			Left,
-			Right
-		}
 		private Direction currentDirection = Direction.Down;
 		private Direction lastDirection = Direction.Down;
 		public Queue<RectangleShape> Body { get; set; }
@@ -43,7 +36,7 @@ namespace Zmeika
 
 			Body.Enqueue(CreateBodyPart(X, Y));
 
-			var food = Program.GetFoodFromPosition(Program.GetPositionFromIndexes(X, Y));
+			var food = Program.GetFoodFromPosition(Utils.GetPositionFromIndexes(X, Y));
 			if (food == null)
 				Body.Dequeue();
 			else
@@ -57,7 +50,7 @@ namespace Zmeika
 			{
 				if (bodyPart.Position.Equals(headPosition))
 				{
-					EatJeppa(GetObjectIndex(Body, bodyPart));
+					EatJeppa(Body.GetObjectIndex(bodyPart));
 					break;
 				}
 			}
@@ -65,34 +58,12 @@ namespace Zmeika
 			Body.Last().Position = ReachingBorders(X, Y);
 		}
 
-		public static int GetObjectIndex<T>(IEnumerable<T> array, T element)
-		{
-			int index = 0;
-			foreach (var obj in array)
-			{
-				if (obj.Equals(element))
-					return index;
-				index++;
-			}
-
-			return -1;
-		}
-
 		private Vector2f ReachingBorders(int indexX, int indexY)
 		{
-			var currentX = SetInInterval(indexX, 0, Program.mapSize.x);
-			var currentY = SetInInterval(indexY, 0, Program.mapSize.y);
+			var currentX = Utils.SetInInterval(indexX, 0, Program.mapSize.x);
+			var currentY = Utils.SetInInterval(indexY, 0, Program.mapSize.y);
 
-			return Program.GetPositionFromIndexes(currentX, currentY);			
-		}
-
-		private int SetInInterval(int current, int min, int max)
-		{
-			if (current > max)
-				return min;
-			if (current < min)
-				return max;
-			return current;
+			return Utils.GetPositionFromIndexes(currentX, currentY);
 		}
 
 		public void Draw(RenderTarget target, RenderStates states)
@@ -103,23 +74,16 @@ namespace Zmeika
 
 		public void ChangeDirection(Direction dir)
 		{
-			if (!IsOppositeDirection(dir, lastDirection))
+			if (!Utils.IsOppositeDirection(dir, lastDirection))
 				currentDirection = dir;
-		}
-
-		private static bool IsOppositeDirection(Direction dirA, Direction dirB)
-		{
-			return (dirA == Direction.Down && dirB == Direction.Up) ||
-			(dirA == Direction.Up && dirB == Direction.Down) ||
-			(dirA == Direction.Left && dirB == Direction.Right) ||
-			(dirA == Direction.Right && dirB == Direction.Left);
 		}
 
 		private static RectangleShape CreateBodyPart(int mapX, int mapY)
 		{
-			var bodyPart = new RectangleShape(Program.SizeOfRectangle);
-			bodyPart.Position = Program.GetPositionFromIndexes(mapX, mapY);
-			return bodyPart;
+			return new RectangleShape(Program.SizeOfRectangle)
+			{
+				Position = Utils.GetPositionFromIndexes(mapX, mapY)
+			};
 		}
 
 		private static (int X, int Y) GetNextIndexes(Direction direction, int currentX, int currentY)
