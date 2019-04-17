@@ -109,10 +109,10 @@ namespace Zmeika
 
 		private static bool IsOppositeDirection(Direction dirA, Direction dirB)
 		{
-			return ((dirA == Direction.Down && dirB == Direction.Up) ||
-			(dirA == Direction.Up && dirB == Direction.Down)) ||
-			((dirA == Direction.Left && dirB == Direction.Right) ||
-			(dirA == Direction.Right && dirB == Direction.Left));
+			return (dirA == Direction.Down && dirB == Direction.Up) ||
+			(dirA == Direction.Up && dirB == Direction.Down) ||
+			(dirA == Direction.Left && dirB == Direction.Right) ||
+			(dirA == Direction.Right && dirB == Direction.Left);
 		}
 
 		private static RectangleShape CreateBodyPart(int mapX, int mapY)
