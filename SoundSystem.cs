@@ -14,6 +14,7 @@ namespace Zmeika
 		private static SoundBuffer _soundBuffer = new SoundBuffer("dead.ogg");
 		private static List<Music> _musicBuffer = new List<Music>();
 		public static Music CurrentMusic;
+		private static Sound _deathSound;
 
 		static SoundSystem()
 		{
@@ -34,7 +35,7 @@ namespace Zmeika
 			CurrentMusic.Play();
 		}
 
-		public static void PlayAllMusic()
+		public static void StartMusic()
 		{
 			var index = Program.randomizer.Next(0, _musicBuffer.Count);
 			CurrentMusic = _musicBuffer[index];
@@ -43,14 +44,19 @@ namespace Zmeika
 			CurrentMusic.Play();
 		}
 
-		public static void PlaySoundDeath()
+		public static void StopDeathSound()
 		{
-			var sound = new Sound(_soundBuffer)
+			_deathSound = null;
+		}
+
+		public static void PlayDeathSound()
+		{
+			_deathSound = new Sound(_soundBuffer)
 			{
-				Volume = 5f
+				Volume = 8f
 			};
 
-			sound.Play();
+			_deathSound.Play();
 		}
 	}
 }
