@@ -25,7 +25,7 @@ namespace Zmeika
 			var index = Program.randomizer.Next(0, _musicBuffer.Count);
 			var sound = new Sound(_musicBuffer[index])
 			{
-				Volume = 10f
+				Volume = 1f
 			};
 
 			sound.Play();
@@ -35,7 +35,7 @@ namespace Zmeika
 		{
 			var sound = new Sound(_soundBuffer)
 			{
-				Volume = 100f
+				Volume = 10f
 			};
 
 			sound.Play();

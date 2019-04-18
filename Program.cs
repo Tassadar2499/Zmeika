@@ -82,6 +82,9 @@ namespace Zmeika
 				if (startMenu.Show)
 					startMenu.Update(dt);
 
+				if (pauseMenu.Show)
+					pauseMenu.Update(dt);
+
 				///////////////////
 				renderWindow.Clear();
 
@@ -99,6 +102,9 @@ namespace Zmeika
 
 				if (startMenu.Show)
 					renderWindow.Draw(startMenu);
+
+				if (pauseMenu.Show)
+					renderWindow.Draw(pauseMenu);
 
 				renderWindow.Display();
 			}
@@ -140,6 +146,7 @@ namespace Zmeika
 		{
 			IsWorldPaused = false;
 			startMenu.Show = false;
+			pauseMenu.Show = false;
 			gameMap.Show = true;
 		}
 
