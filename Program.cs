@@ -155,8 +155,11 @@ namespace Zmeika
 
 		private static void PauseGame()
 		{
-			IsWorldPaused = true;
-			pauseMenu.Show = true;
+			if(!IsWorldPaused)
+			{
+				IsWorldPaused = true;
+				pauseMenu.Show = true;
+			}
 		}
 
 		private static void SnakeMove()
