@@ -22,10 +22,16 @@ namespace Zmeika
 				_musicBuffer.Add(new Music(file));
 		}
 
-		public static void ChangeMusic()
+		public static void ChangeMusic()//быдло код
 		{
-			///Делай бля!
-			
+			CurrentMusic.Stop();
+			var index = _musicBuffer.IndexOf(CurrentMusic);
+			if (index == _musicBuffer.Count - 1)
+				CurrentMusic = _musicBuffer[0];
+			else
+				CurrentMusic = _musicBuffer[index + 1];
+			CurrentMusic.Volume = 5f;
+			CurrentMusic.Play();
 		}
 
 		public static void PlayAllMusic()
