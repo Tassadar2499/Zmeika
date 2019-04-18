@@ -21,18 +21,18 @@ namespace Zmeika
 			Foods = new List<RectangleShape>();
 		}
 
-		public void SnakesEatJeppas()
+		public void CheckEatJeppas()
 		{
 			for(var i = 0; i < Snakes.Count; i++)
 			{
 				for (var j = 0; j < Snakes.Count; j++)
 				{
-					if (Snake.CheckEatJeppa(Snakes[i], Snakes[j]))
+					if (Snake.IsEatJeppa(Snakes[i], Snakes[j]))
 					{
 						EatJeppas(i);
 						return;
 					}
-					else if (i != j && Snake.CheckEatJeppa(Snakes[j], Snakes[i]))
+					else if (i != j && Snake.IsEatJeppa(Snakes[j], Snakes[i]))
 					{
 						EatJeppas(j);
 						return;

@@ -69,7 +69,7 @@ namespace Zmeika
 			}
 		}
 
-		public static bool CheckEatJeppa(Snake first, Snake second)
+		public static bool IsEatJeppa(Snake first, Snake second)
 		{
 			var headPosition = first.Head.Position;
 

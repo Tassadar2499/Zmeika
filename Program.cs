@@ -95,7 +95,7 @@ namespace Zmeika
 			foreach (var snake in gameMap.Snakes)
 				snake.Move();
 
-			gameMap.SnakesEatJeppas();
+			gameMap.CheckEatJeppas();
 		}
 
 		private static void GenerateFood()
