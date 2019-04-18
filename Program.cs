@@ -106,6 +106,8 @@ namespace Zmeika
 					renderWindow.Draw(gameMenu);
 
 				renderWindow.Display();
+				if (SoundSystem.CurrentMusic.Status == SoundStatus.Stopped)
+					SoundSystem.PlayAllMusic();
 			}
 		}
 
