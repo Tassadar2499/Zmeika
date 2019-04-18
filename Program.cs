@@ -23,7 +23,8 @@ namespace Zmeika
 		public static RenderWindow renderWindow;
 
 		public static bool IsWorldPaused = true;
-		public static Menu gameMenu;
+		public static Menu startMenu;
+		public static Menu pauseMenu;
 		public static DeathScreen deathScreen;
 
 
@@ -59,14 +60,8 @@ namespace Zmeika
 			gameMap.Show = false;
 
 			deathScreen = new DeathScreen("dead.png");
-
-			gameMenu = new Menu(new (string, Action)[]{
-				("Начать игру", StartGame),
-				("Настройки", ShowSettingMenu),
-				(" ", () => { }),
-				("Выход", () => renderWindow.Close())
-			}, 30, "font.ttf");
-			renderWindow.MouseButtonReleased += gameMenu.OnMouseClick;
+			startMenu = BuildStartMenu();
+			pauseMenu = BuildPauseMenu();
 
 			var updateTimer = BuildUpdateTimer(0.11f);
 			var clock = new Clock();
@@ -84,8 +79,11 @@ namespace Zmeika
 				if (deathScreen.Show)
 					deathScreen.Update(dt);
 
-				if (gameMenu.Show)
-					gameMenu.Update(dt);
+				if (startMenu.Show)
+					startMenu.Update(dt);
+
+				if (pauseMenu.Show)
+					pauseMenu.Update(dt);
 
 				///////////////////
 				renderWindow.Clear();
@@ -102,13 +100,43 @@ namespace Zmeika
 				if (deathScreen.Show)
 					renderWindow.Draw(deathScreen);
 
-				if (gameMenu.Show)
-					renderWindow.Draw(gameMenu);
+				if (startMenu.Show)
+					renderWindow.Draw(startMenu);
+
+				if (pauseMenu.Show)
+					renderWindow.Draw(pauseMenu);
 
 				renderWindow.Display();
 				if (SoundSystem.CurrentMusic.Status == SoundStatus.Stopped)
 					SoundSystem.PlayAllMusic();
 			}
+		}
+
+		private static Menu BuildStartMenu()
+		{
+			var menu = new Menu(new (string, Action)[]{
+				("Начать игру", StartGame),
+				("Настройки", ShowSettingMenu),
+				(" ", () => { }),
+				("Выход", () => renderWindow.Close())
+			}, 30, "font.ttf");
+			renderWindow.MouseButtonReleased += menu.OnMouseClick;
+			menu.Show = true;
+
+			return menu;
+		}
+
+		private static Menu BuildPauseMenu()
+		{
+			var menu = new Menu(new (string, Action)[]{
+				("Продолжить игру", StartGame),
+				(" ", () => { }),
+				("Выход", () => renderWindow.Close())
+			}, 30, "font.ttf");
+			renderWindow.MouseButtonReleased += menu.OnMouseClick;
+			menu.Show = false;
+
+			return menu;
 		}
 
 		private static void ShowSettingMenu()
@@ -119,8 +147,15 @@ namespace Zmeika
 		private static void StartGame()
 		{
 			IsWorldPaused = false;
-			gameMenu.Show = false;
+			startMenu.Show = false;
+			pauseMenu.Show = false;
 			gameMap.Show = true;
+		}
+
+		private static void PauseGame()
+		{
+			IsWorldPaused = true;
+			pauseMenu.Show = true;
 		}
 
 		private static void SnakeMove()
@@ -164,7 +199,7 @@ namespace Zmeika
 				case Keyboard.Key.Numpad6: gameMap.Snakes.Last().ChangeDirection(Direction.Right); break;
 
 				case Keyboard.Key.Escape:
-					renderWindow.Close();
+					PauseGame();
 					break;
 			}
 		}
