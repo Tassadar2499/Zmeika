@@ -71,6 +71,7 @@ namespace Zmeika
 			var updateTimer = BuildUpdateTimer(0.11f);
 			var clock = new Clock();
 
+			SoundSystem.PlayAllMusic();
 			while (renderWindow.IsOpen)
 			{
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
