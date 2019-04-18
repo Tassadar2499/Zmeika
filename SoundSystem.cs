@@ -11,7 +11,7 @@ namespace Zmeika
 {
 	public static class SoundSystem
 	{
-		private static SoundBuffer _soundBuffer = new SoundBuffer("dead.wav");
+		private static SoundBuffer _soundBuffer = new SoundBuffer("dead.ogg");
 		private static List<SoundBuffer> _musicBuffer = new List<SoundBuffer>();
 		public static Sound CurrentMusic;
 
