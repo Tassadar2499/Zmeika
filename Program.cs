@@ -49,8 +49,8 @@ namespace Zmeika
 		{
 			renderWindow = BuildRenderWindow((800, 600));
 
-			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS)),
-					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS)));
+			mapSize =  ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS)),
+						(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS)));
 
 			gameMap.Snakes.Add(new Snake(5, 5, 10, Color.Blue));
 			gameMap.Snakes.Add(new Snake(mapSize.X - 5, 5, 10, Color.White));
@@ -65,7 +65,6 @@ namespace Zmeika
 			{
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
 				renderWindow.DispatchEvents();
-
 				///////////////////
 
 				if (!IsWorldPaused)
