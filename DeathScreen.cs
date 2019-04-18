@@ -12,7 +12,7 @@ namespace Zmeika
 	{
 		public bool Show;
 		public Sprite Sprite;
-		public ClockTimer Timer;
+		public UpdateTimer Timer;
 
 		public DeathScreen(string spritePath)
 		{
@@ -24,7 +24,7 @@ namespace Zmeika
 					Program.renderWindow.Size.Y / (float)Sprite.TextureRect.Height);
 			Sprite.Color = new Color(0, 0, 0, 0);
 
-			Timer = new ClockTimer(Time.FromSeconds(0.03f));
+			Timer = new UpdateTimer(Time.FromSeconds(0.03f));
 			Timer.Tick += () => Sprite.Color =
 				new Color(255, 255, 255, (byte)Math.Min(Sprite.Color.A + 2, byte.MaxValue));
 		}
