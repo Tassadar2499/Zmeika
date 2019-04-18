@@ -130,6 +130,7 @@ namespace Zmeika
 		{
 			var menu = new Menu(new (string, Action)[]{
 				("Продолжить игру", StartGame),
+				("Сменить музыку", )
 				(" ", () => { }),
 				("Выход", () => renderWindow.Close())
 			}, 30, "font.ttf");

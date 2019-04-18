@@ -21,6 +21,12 @@ namespace Zmeika
 			foreach (var file in files)
 				_musicBuffer.Add(new SoundBuffer(file));
 		}
+
+		public static void ChangeMusic()
+		{
+			///Делай бля!
+		}
+
 		public static void PlayAllMusic()
 		{
 			var index = Program.randomizer.Next(0, _musicBuffer.Count);
