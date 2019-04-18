@@ -32,7 +32,7 @@ namespace Zmeika
 			var index = Program.randomizer.Next(0, _musicBuffer.Count);
 			CurrentMusic = new Sound(_musicBuffer[index])
 			{
-				Volume = 1f
+				Volume = 5f
 			};
 
 			CurrentMusic.Play();
@@ -42,11 +42,10 @@ namespace Zmeika
 		{
 			var sound = new Sound(_soundBuffer)
 			{
-				Volume = 10f
+				Volume = 5f
 			};
 
 			sound.Play();
-			CurrentMusic.Volume = 0.1f;
 		}
 	}
 }

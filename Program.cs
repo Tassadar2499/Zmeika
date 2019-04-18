@@ -130,7 +130,7 @@ namespace Zmeika
 		{
 			var menu = new Menu(new (string, Action)[]{
 				("Продолжить игру", StartGame),
-				("Сменить музыку", )
+				("Сменить музыку", SoundSystem.ChangeMusic),
 				(" ", () => { }),
 				("Выход", () => renderWindow.Close())
 			}, 30, "font.ttf");
@@ -183,6 +183,7 @@ namespace Zmeika
 			IsWorldPaused = true;
 			deathScreen.Show = true;
 			SoundSystem.PlaySoundDeath();
+			SoundSystem.CurrentMusic.Volume = 1f;
 		}
 
 		private static void KeyPressed(object sender, KeyEventArgs e)
