@@ -79,7 +79,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeathScreen.cs" />
     <Compile Include="GameMap.cs" />
+    <Compile Include="IUpdate.cs" />
     <Compile Include="SoundSystem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

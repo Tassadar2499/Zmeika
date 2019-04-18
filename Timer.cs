@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Zmeika
 {
-	class Timer
+	class Timer : IUpdate
 	{
 		private Clock Clock { get; set; } = new Clock();
 		public Time Time { get; private set; } = Time.Zero;

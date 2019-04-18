@@ -28,10 +28,15 @@ namespace Zmeika
 				for (var j = 0; j < Snakes.Count; j++)
 				{
 					if (Snake.CheckEatJeppa(Snakes[i], Snakes[j]))
+					{
 						EatJeppas(i);
-
-					if (i != j && Snake.CheckEatJeppa(Snakes[j], Snakes[i]))
+						return;
+					}
+					else if (i != j && Snake.CheckEatJeppa(Snakes[j], Snakes[i]))
+					{
 						EatJeppas(j);
+						return;
+					}
 				}
 			}
 		}

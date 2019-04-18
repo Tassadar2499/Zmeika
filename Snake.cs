@@ -26,31 +26,34 @@ namespace Zmeika
 			Color = color;
 			Body = new Queue<RectangleShape>();
 			for (int i = 0; i < length; i++)
-				Body.Enqueue(CreateBodyPart(mapX, mapY, Color));
+				Body.Enqueue(CreateBodyPart((mapX, mapY), Color));
 		}
 
 		public void Move()
 		{
 			var bodyPosition = Body.Last().Position;
-			var currentIndexX = Utils.GetIndexFromPosition(bodyPosition.X);
-			var currentIndexY = Utils.GetIndexFromPosition(bodyPosition.Y);
-			var (X, Y) = GetNextIndexes(currentDirection, currentIndexX, currentIndexY);
+			var currentIndex = (
+				Utils.GetIndexFromPosition(bodyPosition.X),
+				Utils.GetIndexFromPosition(bodyPosition.Y));
+			var (X, Y) = GetNextIndexes(currentDirection, currentIndex);
 			lastDirection = currentDirection;
 
-			Body.Enqueue(CreateBodyPart(X, Y, Color));
+			Body.Enqueue(CreateBodyPart((X, Y), Color));
 
 			var food = Program.gameMap.GetFoodFromPosition(Utils.GetPositionFromIndexes(X, Y));
 			if (food == null)
+			{
 				Body.Dequeue();
+			}
 			else
 			{
 				Program.gameMap.Foods.Remove(food);
 				LengthChanged?.Invoke(Body.Count);
 			}
 
-			CheckSelfEatJeppa();				
+			CheckSelfEatJeppa();
 
-			Body.Last().Position = ReachingBorders(X, Y);
+			Body.Last().Position = ReachingBorders((X, Y));
 		}
 
 		private void CheckSelfEatJeppa()
@@ -86,10 +89,10 @@ namespace Zmeika
 			return false;
 		}
 
-		private Vector2f ReachingBorders(int indexX, int indexY)
+		private Vector2f ReachingBorders((int X, int Y) mapIndex)
 		{
-			var currentX = Utils.SetInInterval(indexX, 0, Program.mapSize.X);
-			var currentY = Utils.SetInInterval(indexY, 0, Program.mapSize.Y);
+			var currentX = Utils.SetInInterval(mapIndex.X, 0, Program.mapSize.X);
+			var currentY = Utils.SetInInterval(mapIndex.Y, 0, Program.mapSize.Y);
 
 			return Utils.GetPositionFromIndexes(currentX, currentY);
 		}
@@ -106,25 +109,25 @@ namespace Zmeika
 				currentDirection = dir;
 		}
 
-		private static RectangleShape CreateBodyPart(int mapX, int mapY, Color color)
+		private static RectangleShape CreateBodyPart((int X, int Y) mapIndex, Color color)
 		{
 			return new RectangleShape(Program.SizeOfRectangle)
 			{
-				Position = Utils.GetPositionFromIndexes(mapX, mapY),
+				Position = Utils.GetPositionFromIndexes(mapIndex.X, mapIndex.Y),
 				FillColor = color
 			};
 		}
 
-		private static (int X, int Y) GetNextIndexes(Direction direction, int currentX, int currentY)
+		private static (int X, int Y) GetNextIndexes(Direction direction, (int X, int Y) current)
 		{
 			switch (direction)
 			{
-				case Direction.Up: currentY--; break;
-				case Direction.Down: currentY++; break;
-				case Direction.Left: currentX--; break;
-				case Direction.Right: currentX++; break;
+				case Direction.Up: current.Y--; break;
+				case Direction.Down: current.Y++; break;
+				case Direction.Left: current.X--; break;
+				case Direction.Right: current.X++; break;
 			}
-			return (currentX, currentY);
+			return current;
 		}
 	}
 }

@@ -14,56 +14,67 @@ namespace Zmeika
 {
 	class Program
 	{
-		public static GameMap gameMap = new GameMap();
-		public static Random randomizer;
-		public static RenderWindow renderWindow;
-		public static (int X, int Y) mapSize;
-		public static Timer timer;
-		public static Clock clock;
+		public const float RANGE_BETWEEN_BLOCKS = 2;
 		public static Vector2f SizeOfRectangle { get; private set; } = new Vector2f(20, 20);
-		public const float RANGE_BETWEEN_BLOCKS = 1;
+		public static (int X, int Y) mapSize;
+
+		public static GameMap gameMap = new GameMap();
+		public static Random randomizer = new Random();
+		public static RenderWindow renderWindow;
+
 		public static bool IsWorldPaused = false;
+		public static DeathScreen deathScreen;
 
-		public static bool ShowDeadScreen = false;
-		public static Sprite DeadScreen;
 
-		static void Main(string[] args)
+		private static RenderWindow BuildRenderWindow((uint X, uint Y) size)
 		{
-			renderWindow = new RenderWindow(new VideoMode(800, 600), "game");
-			renderWindow.SetFramerateLimit(120);
-			renderWindow.KeyPressed += KeyPressed;
-			renderWindow.Closed += (obj, arg) => (obj as RenderWindow).Close();
-			randomizer = new Random();
+			var window = new RenderWindow(new VideoMode(size.X, size.Y), "game");
+			window.SetFramerateLimit(120);
+			window.KeyPressed += KeyPressed;
+			window.Closed += (obj, arg) => (obj as RenderWindow).Close();
 
-			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)),
-					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
+			return window;
+		}
 
-			DeadScreen = new Sprite(new Texture("dead.png"));
-			DeadScreen.Scale = new Vector2f(
-					renderWindow.Size.X / (float)DeadScreen.TextureRect.Width,
-					renderWindow.Size.Y / (float)DeadScreen.TextureRect.Height);
-			DeadScreen.Color = new Color(0, 0, 0, 0);
+		private static Timer BuildUpdateTimer(float timeInSecond)
+		{
+			var updateTimer = new Timer(Time.FromSeconds(timeInSecond));
+			updateTimer.Tick += SnakeMove;
+			updateTimer.Tick += GenerateFood;
 
-			gameMap.Snakes.Add(CreateSnake(5, 5, 10, Color.Blue));
-			gameMap.Snakes.Add(CreateSnake(mapSize.X - 5, 5, 10, Color.White));
+			return updateTimer;
+		}
+
+		private static void Main(string[] args)
+		{
+			renderWindow = BuildRenderWindow((800, 600));
+
+			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS)),
+					(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS)));
+
+			gameMap.Snakes.Add(new Snake(5, 5, 10, Color.Blue));
+			gameMap.Snakes.Add(new Snake(mapSize.X - 5, 5, 10, Color.White));
 			gameMap.EatJeppas += OnSnakeEatsJeppa;
 
-			var deadScreenTimer = new Timer(Time.FromSeconds(0.03f));
-			deadScreenTimer.Tick += () => DeadScreen.Color = new Color(255, 255, 255, (byte)Math.Min(DeadScreen.Color.A + 2, byte.MaxValue));
+			deathScreen = new DeathScreen("dead.png");
 
-			timer = new Timer(Time.FromSeconds(0.11f));
-			timer.Tick += SnakeMove;
-			timer.Tick += GenerateFood;
-			clock = new Clock();
+			var updateTimer = BuildUpdateTimer(0.11f);
+			var clock = new Clock();
 
 			while (renderWindow.IsOpen)
 			{
 				var dt = clock.Restart().AsMicroseconds() * 0.001f;
 				renderWindow.DispatchEvents();
 
-				if (!IsWorldPaused)
-					timer.Update(dt);
+				///////////////////
 
+				if (!IsWorldPaused)
+					updateTimer.Update(dt);
+
+				if (deathScreen.Show)
+					deathScreen.Update(dt);
+
+				///////////////////
 				renderWindow.Clear();
 
 				foreach (var snake in gameMap.Snakes)
@@ -72,11 +83,8 @@ namespace Zmeika
 				foreach (var food in gameMap.Foods)
 					renderWindow.Draw(food);
 
-				if (ShowDeadScreen)
-				{
-					renderWindow.Draw(DeadScreen);
-					deadScreenTimer.Update(dt);
-				}
+				if (deathScreen.Show)
+					renderWindow.Draw(deathScreen);
 
 				renderWindow.Display();
 			}
@@ -95,44 +103,16 @@ namespace Zmeika
 			//сделать проверку на жопу змеи
 			if (gameMap.Foods.Count < 5)
 			{
-				var indexX = randomizer.Next(0, (int)(renderWindow.Size.X /
-					(SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS * 2)));
-
-				var indexY = randomizer.Next(0, (int)(renderWindow.Size.Y /
-					(SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS * 2)));
-
+				var indexX = randomizer.Next(0, mapSize.X);
+				var indexY = randomizer.Next(0, mapSize.Y);
 				gameMap.CreateFood(indexX, indexY);
 			}
-		}
-
-		private static Snake CreateSnake(int indexX, int indexY, int lenght, Color color)
-		{
-			var snake = new Snake(indexX, indexY, lenght, color);
-
-			//snake.EatJeppa += OnSnakeEatsJeppa;
-
-			return snake;
-		}
-
-		private static int ChangeCurrentRecord(int length)
-		{
-			var path = "Record.txt";
-			var str = JsonConvert.DeserializeObject(File.ReadAllText(path));
-			var lengthRecord = int.Parse(str.ToString());
-			if (length > lengthRecord)
-			{
-				str = JsonConvert.SerializeObject(length);
-				File.Delete(path);
-				File.AppendAllText(path, str.ToString());
-				lengthRecord = length;
-			}
-			return lengthRecord;
 		}
 
 		private static void OnSnakeEatsJeppa(int snakeIndex)
 		{
 			IsWorldPaused = true;
-			ShowDeadScreen = true;
+			deathScreen.Show = true;
 			SoundSystem.PlaySoundDeath();
 		}
 
