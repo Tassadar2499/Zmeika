@@ -60,8 +60,9 @@ namespace Zmeika
 			deathScreen = new DeathScreen("dead.png");
 
 			var menu = new Menu(new (string,Action)[]{
-				("START", () => Console.WriteLine("start")),
-				("End", () => Console.WriteLine("end"))
+				("Начать игру", () => Console.WriteLine("start")),
+				("Настройки", () => Console.WriteLine("end")),
+				("Выход", () => Console.WriteLine("end"))
 			},  25, "font.ttf");
 
 			var updateTimer = BuildUpdateTimer(0.11f);
