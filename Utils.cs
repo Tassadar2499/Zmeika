@@ -1,4 +1,5 @@
 ﻿using SFML.System;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,10 @@ namespace Zmeika
 
 	public static class Utils
 	{
+		public static Vector2f GetMousePosition()
+			=> Program.renderWindow.MapPixelToCoords(Mouse.GetPosition(Program.renderWindow));
+
+
 		public static Vector2f GetPositionFromIndexes(int indexX, int indexY)
 		{
 			return new Vector2f(indexX * (Program.SizeOfRectangle.X + Program.RANGE_BETWEEN_BLOCKS), indexY *

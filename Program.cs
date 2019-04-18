@@ -23,6 +23,7 @@ namespace Zmeika
 		public static RenderWindow renderWindow;
 
 		public static bool IsWorldPaused = false;
+		public static bool IsMenu = true;
 		public static DeathScreen deathScreen;
 
 
@@ -58,6 +59,11 @@ namespace Zmeika
 
 			deathScreen = new DeathScreen("dead.png");
 
+			var menu = new Menu(new (string,Action)[]{
+				("START", () => Console.WriteLine("start")),
+				("End", () => Console.WriteLine("end"))
+			},  25, "font.ttf");
+
 			var updateTimer = BuildUpdateTimer(0.11f);
 			var clock = new Clock();
 
@@ -73,6 +79,8 @@ namespace Zmeika
 				if (deathScreen.Show)
 					deathScreen.Update(dt);
 
+				menu.Update(dt);
+
 				///////////////////
 				renderWindow.Clear();
 
@@ -84,6 +92,8 @@ namespace Zmeika
 
 				if (deathScreen.Show)
 					renderWindow.Draw(deathScreen);
+
+				renderWindow.Draw(menu);
 
 				renderWindow.Display();
 			}
