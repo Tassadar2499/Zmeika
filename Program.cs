@@ -22,8 +22,8 @@ namespace Zmeika
 		public static Random randomizer = new Random();
 		public static RenderWindow renderWindow;
 
-		public static bool IsWorldPaused = false;
-		public static bool IsMenu = true;
+		public static bool IsWorldPaused = true;
+		public static Menu gameMenu;
 		public static DeathScreen deathScreen;
 
 
@@ -37,9 +37,9 @@ namespace Zmeika
 			return window;
 		}
 
-		private static Timer BuildUpdateTimer(float timeInSecond)
+		private static UpdateTimer BuildUpdateTimer(float timeInSecond)
 		{
-			var updateTimer = new Timer(Time.FromSeconds(timeInSecond));
+			var updateTimer = new UpdateTimer(Time.FromSeconds(timeInSecond));
 			updateTimer.Tick += SnakeMove;
 			updateTimer.Tick += GenerateFood;
 
@@ -50,20 +50,23 @@ namespace Zmeika
 		{
 			renderWindow = BuildRenderWindow((800, 600));
 
-			mapSize =  ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS)),
+			mapSize = ((int)(renderWindow.Size.X / (SizeOfRectangle.X + RANGE_BETWEEN_BLOCKS)),
 						(int)(renderWindow.Size.Y / (SizeOfRectangle.Y + RANGE_BETWEEN_BLOCKS)));
 
 			gameMap.Snakes.Add(new Snake(5, 5, 10, Color.Blue));
 			gameMap.Snakes.Add(new Snake(mapSize.X - 5, 5, 10, Color.White));
 			gameMap.EatJeppas += OnSnakeEatsJeppa;
+			gameMap.Show = false;
 
 			deathScreen = new DeathScreen("dead.png");
 
-			var menu = new Menu(new (string,Action)[]{
-				("Начать игру", () => Console.WriteLine("start")),
-				("Настройки", () => Console.WriteLine("end")),
-				("Выход", () => Console.WriteLine("end"))
-			},  25, "font.ttf");
+			gameMenu = new Menu(new (string, Action)[]{
+				("Начать игру", StartGame),
+				("Настройки", ShowSettingMenu),
+				(" ", () => { }),
+				("Выход", () => renderWindow.Close())
+			}, 30, "font.ttf");
+			renderWindow.MouseButtonReleased += gameMenu.OnMouseClick;
 
 			var updateTimer = BuildUpdateTimer(0.11f);
 			var clock = new Clock();
@@ -80,24 +83,41 @@ namespace Zmeika
 				if (deathScreen.Show)
 					deathScreen.Update(dt);
 
-				menu.Update(dt);
+				if (gameMenu.Show)
+					gameMenu.Update(dt);
 
 				///////////////////
 				renderWindow.Clear();
 
-				foreach (var snake in gameMap.Snakes)
-					renderWindow.Draw(snake);
+				if (gameMap.Show)
+				{
+					foreach (var snake in gameMap.Snakes)
+						renderWindow.Draw(snake);
 
-				foreach (var food in gameMap.Foods)
-					renderWindow.Draw(food);
+					foreach (var food in gameMap.Foods)
+						renderWindow.Draw(food);
+				}
 
 				if (deathScreen.Show)
 					renderWindow.Draw(deathScreen);
 
-				renderWindow.Draw(menu);
+				if (gameMenu.Show)
+					renderWindow.Draw(gameMenu);
 
 				renderWindow.Display();
 			}
+		}
+
+		private static void ShowSettingMenu()
+		{
+			throw new NotImplementedException();
+		}
+
+		private static void StartGame()
+		{
+			IsWorldPaused = false;
+			gameMenu.Show = false;
+			gameMap.Show = true;
 		}
 
 		private static void SnakeMove()

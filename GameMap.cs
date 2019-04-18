@@ -10,6 +10,8 @@ namespace Zmeika
 {
 	class GameMap
 	{
+		public bool Show = true;
+
 		public List<Snake> Snakes { get; set; }
 		public List<RectangleShape> Foods { get; set; }
 

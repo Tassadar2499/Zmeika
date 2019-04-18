@@ -1,5 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,11 @@ namespace Zmeika
 	{
 		private Font _font;
 		private List<(Text Text, Action Func)> _items;
+		public bool Show;
 
 		public Menu(IEnumerable<(string Str, Action Func)> items, uint charSize, string fontPath)
 		{
+			Show = true;
 			_font = new Font(fontPath);
 			_items = new List<(Text Text, Action Func)>();
 
@@ -30,6 +33,19 @@ namespace Zmeika
 
 				_items.Add((text, item.Func));
 				count++;
+			}
+		}
+
+		public void OnMouseClick(object sender, MouseButtonEventArgs e)
+		{
+			if (e.Button != Mouse.Button.Left || !Show)
+				return;
+
+			foreach (var item in _items)
+			{
+				var mousePos = Utils.GetMousePosition();
+				if (item.Text.GetGlobalBounds().Contains(e.X, e.Y))
+					item.Func();
 			}
 		}
 
